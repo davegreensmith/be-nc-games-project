@@ -1,5 +1,5 @@
 const categories = require('../db/data/test-data/categories');
-const { fetchCategories } = require('../models/model.games.js');
+const { fetchCategories, fetchReviewById } = require('../models/model.games.js');
 
 exports.getCategories = (req, res, next) => {
   fetchCategories().then((categories) => {
@@ -7,6 +7,14 @@ exports.getCategories = (req, res, next) => {
   });
 };
 
-exports.noPath = (req, res) => {
-  res.status(404).send({ msg: 'Path not found' });
+exports.getReviewById = (req, res, next) => {
+  const { review_id } = req.params;
+
+  fetchReviewById(review_id)
+    .then((review) => {
+      res.status(200).send({ review });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
