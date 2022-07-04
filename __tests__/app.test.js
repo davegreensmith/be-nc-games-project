@@ -46,3 +46,42 @@ describe('GET/api/categories', () => {
     });
   });
 });
+
+describe('GET review by id', () => {
+  test('get /api/review/:review_id 200 code responds with an object, which has the properties of the requested review', () => {
+    return request(app)
+      .get('/api/review/3')
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual({
+          review_id: 3,
+          title: expect.any(String),
+          category: expect.any(String),
+          review_body: expect.any(String),
+          designer: expect.any(String),
+          review_img_url: expect.any(String),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          owner: expect.any(String),
+        });
+      });
+  });
+  describe('errors', () => {
+    test('get /api/review/pizza - bad request - 400 code responds with a message "Bad request"', () => {
+      return request(app)
+        .get('/api/review/pizza')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+    test('get /api/review/69 - id does not exist - 404 code responds with a message "Review not found"', () => {
+      return request(app)
+        .get('/api/review/69')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Review not found');
+        });
+    });
+  });
+});
