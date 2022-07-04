@@ -13,12 +13,13 @@ afterAll(() => {
 });
 
 describe('GET/api/categories', () => {
-  test('GET /api/categories 200 code responds with an array', () => {
+  test('GET /api/categories 200 code responds with an array with a length of 4', () => {
     return request(app)
       .get('/api/categories')
       .expect(200)
       .then(({ body: { categories } }) => {
         expect(categories).toBeInstanceOf(Array);
+        expect(categories).toHaveLength(4);
       });
   });
   test('GET /api/categories 200 code responds with an array of category object, each should have the properties slug and description', () => {
