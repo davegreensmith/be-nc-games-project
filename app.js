@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
-const { getCategories, getReviewById, noPath } = require('./controllers/controller.games');
-const { handleCustomErrors, handlePSQLErrors, unhandledErrors } = require('./errors/error-handlers.js');
+const { getCategories, getReviewById } = require('./controllers/controller.games');
+const { handleCustomErrors, handlePSQLErrors, unhandledErrors, noPath } = require('./errors/error-handlers.js');
 
 app.get('/api/categories', getCategories);
 app.get('/api/review/:review_id', getReviewById);

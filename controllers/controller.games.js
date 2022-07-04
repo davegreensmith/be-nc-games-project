@@ -18,7 +18,3 @@ exports.getReviewById = (req, res, next) => {
       next(err);
     });
 };
-
-exports.noPath = (req, res) => {
-  res.status(404).send({ msg: 'Path not found' });
-};

@@ -1,7 +1,5 @@
 exports.handleCustomErrors = (err, req, res, next) => {
   if (err.status && err.msg) {
-    // console.log(err.status, '<<< ERROR STATUS');
-    // console.log(err.msg, '<<< ERROR msg');
     res.status(err.status).send({ msg: err.msg });
   }
   next(err);
@@ -16,4 +14,8 @@ exports.handlePSQLErrors = (err, req, res, next) => {
 
 exports.unhandledErrors = (err, req, res, next) => {
   res.status(500).send({ msg: 'unhandled server error' });
+};
+
+exports.noPath = (req, res) => {
+  res.status(404).send({ msg: 'Path not found' });
 };
