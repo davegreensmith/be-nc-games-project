@@ -88,4 +88,7 @@ describe('PATCH /api/reviews/:review_id', () => {
         });
       });
   });
+  describe('errors', () => {
+    test('patch /api/reviews/pizza responds with 400 code and returns message ""', () => {});
+  });
 });
