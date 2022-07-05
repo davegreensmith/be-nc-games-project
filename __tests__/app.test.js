@@ -129,25 +129,56 @@ describe('PATCH /api/reviews/:review_id', () => {
         });
       });
   });
-  describe('errors', () => {});
-  test('patch /api/reviews/pizza responds with 400 code and returns message ""', () => {
-    const update = { inc_votes: 20 };
-    return request(app)
-      .patch('/api/reviews/pizza')
-      .send(update)
-      .expect(400)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe('Bad request');
-      });
-  });
-  test("patch /api/reviews/69 responds with 404 code and returns message 'Review not found'", () => {
-    const update = { inc_votes: 20 };
-    return request(app)
-      .patch('/api/reviews/69')
-      .send(update)
-      .expect(404)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe('Review not found');
-      });
+  describe('errors', () => {
+    test('patch /api/reviews/pizza responds with 400 code and returns message ""', () => {
+      const update = { inc_votes: 20 };
+      return request(app)
+        .patch('/api/reviews/pizza')
+        .send(update)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+    test("patch /api/reviews/69 responds with 404 code and returns message 'Review not found'", () => {
+      const update = { inc_votes: 20 };
+      return request(app)
+        .patch('/api/reviews/69')
+        .send(update)
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Review not found');
+        });
+    });
+    test("patch /api/reviews/1 and inc_votes is the wrong data type - responds with 400 code and message 'Bad request'", () => {
+      const update = { inc_votes: 'pizza' };
+      return request(app)
+        .patch('/api/reviews/1')
+        .send(update)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+    test("patch /api/reviews/1 and inc_votes is mis-spelt - responds with 400 code and message 'Bad request'", () => {
+      const update = { inc_pizza: 20 };
+      return request(app)
+        .patch('/api/reviews/1')
+        .send(update)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+    test("patch /api/reviews/1 and inc_votes is omitted - responds with 400 code and message 'Bad request'", () => {
+      const update = {};
+      return request(app)
+        .patch('/api/reviews/1')
+        .send(update)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
   });
 });

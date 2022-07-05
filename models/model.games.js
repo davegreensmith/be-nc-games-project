@@ -7,6 +7,10 @@ exports.fetchCategories = () => {
 };
 
 exports.updateReviewById = (review_id, inc_votes) => {
+  if (inc_votes === undefined) {
+    return Promise.reject({ status: 400, msg: 'Bad request' });
+  }
+
   return db.query(`UPDATE reviews SET votes = votes + $2 WHERE review_id = $1 RETURNING *;`, [review_id, inc_votes]).then(({ rows }) => {
     return rows[0];
   });

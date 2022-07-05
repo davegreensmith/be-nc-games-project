@@ -10,6 +10,7 @@ exports.getCategories = (req, res, next) => {
 exports.patchReviewById = (req, res, next) => {
   const { review_id } = req.params;
   const { inc_votes } = req.body;
+
   updateReviewById(review_id, inc_votes)
     .then((review) => {
       if (review === undefined) {
