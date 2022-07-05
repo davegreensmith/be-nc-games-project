@@ -47,6 +47,48 @@ describe('GET/api/categories', () => {
   });
 });
 
+describe('GET review by id', () => {
+  test('get /api/review/:review_id 200 code responds with an object, which has the properties of the requested review', () => {
+    return request(app)
+      .get('/api/review/3')
+      .expect(200)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual({
+          review_id: 3,
+          title: expect.any(String),
+          category: expect.any(String),
+          review_body: expect.any(String),
+          designer: expect.any(String),
+          review_img_url: expect.any(String),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          owner: expect.any(String),
+        });
+      });
+  });
+});
+
+describe('errors', () => {
+  test('patch /api/reviews/pizza responds with 400 code and returns message ""', () => {});
+
+  test('get /api/review/pizza - bad request - 400 code responds with a message "Bad request"', () => {
+    return request(app)
+      .get('/api/review/pizza')
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe('Bad request');
+      });
+  });
+  test('get /api/review/69 - id does not exist - 404 code responds with a message "Review not found"', () => {
+    return request(app)
+      .get('/api/review/69')
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe('Review not found');
+      });
+  });
+});
+
 describe('PATCH /api/reviews/:review_id', () => {
   test('patch /api/reviews/1 responds with 201 code and returns the updated review in the message body as an object when votes is udated using a positive number', () => {
     const update = { inc_votes: 20 };
@@ -68,27 +110,25 @@ describe('PATCH /api/reviews/:review_id', () => {
         });
       });
   });
-  test('patch /api/reviews/1 responds with 201 code and returns the updated review in the message body as an object when votes is udated using a negative number', () => {
-    const update = { inc_votes: -1 };
-    return request(app)
-      .patch('/api/reviews/1')
-      .send(update)
-      .expect(201)
-      .then(({ body: { review } }) => {
-        expect(review).toEqual({
-          review_id: 1,
-          title: 'Agricola',
-          category: 'euro game',
-          designer: 'Uwe Rosenberg',
-          owner: 'mallionaire',
-          review_body: 'Farmyard fun!',
-          review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-          created_at: expect.any(String),
-          votes: 0,
-        });
+});
+
+test('patch /api/reviews/1 responds with 201 code and returns the updated review in the message body as an object when votes is udated using a negative number', () => {
+  const update = { inc_votes: -1 };
+  return request(app)
+    .patch('/api/reviews/1')
+    .send(update)
+    .expect(201)
+    .then(({ body: { review } }) => {
+      expect(review).toEqual({
+        review_id: 1,
+        title: 'Agricola',
+        category: 'euro game',
+        designer: 'Uwe Rosenberg',
+        owner: 'mallionaire',
+        review_body: 'Farmyard fun!',
+        review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+        created_at: expect.any(String),
+        votes: 0,
       });
-  });
-  describe('errors', () => {
-    test('patch /api/reviews/pizza responds with 400 code and returns message ""', () => {});
-  });
+    });
 });
