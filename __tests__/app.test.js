@@ -219,3 +219,15 @@ describe('GET /api/users', () => {
     });
   });
 });
+
+describe.only('GET /api/reviews/:review_id/comments', () => {
+  test('200: responds with an array of comments for the given review_id of length 3', () => {
+    return request(app)
+      .get('/api/reviews/2/comments')
+      .expect(200)
+      .then(({ body: { review_comments } }) => {
+        expect(review_comments).toBeInstanceOf(Array);
+        expect(review_comments).toHaveLength(3);
+      });
+  });
+});
