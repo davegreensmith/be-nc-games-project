@@ -1,4 +1,3 @@
 \c nc_games_test
 
-SELECT * FROM reviews
-WHERE review_id = 3;
+UPDATE reviews SET votes = votes + 20 WHERE review_id = 69 RETURNING *;

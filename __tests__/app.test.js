@@ -66,6 +66,7 @@ describe('GET review by id', () => {
         });
       });
   });
+
   describe('errors', () => {
     test('get /api/review/pizza - bad request - 400 code responds with a message "Bad request"', () => {
       return request(app)
@@ -81,6 +82,102 @@ describe('GET review by id', () => {
         .expect(404)
         .then(({ body: { msg } }) => {
           expect(msg).toBe('Review not found');
+        });
+    });
+  });
+});
+
+describe('PATCH /api/reviews/:review_id', () => {
+  test('patch /api/reviews/1 responds with 201 code and returns the updated review in the message body as an object when votes is udated using a positive number', () => {
+    const update = { inc_votes: 20 };
+    return request(app)
+      .patch('/api/reviews/1')
+      .send(update)
+      .expect(201)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual({
+          review_id: 1,
+          title: 'Agricola',
+          category: 'euro game',
+          designer: 'Uwe Rosenberg',
+          owner: 'mallionaire',
+          review_body: 'Farmyard fun!',
+          review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+          created_at: expect.any(String),
+          votes: 21,
+        });
+      });
+  });
+
+  test('patch /api/reviews/1 responds with 201 code and returns the updated review in the message body as an object when votes is udated using a negative number', () => {
+    const update = { inc_votes: -1 };
+    return request(app)
+      .patch('/api/reviews/1')
+      .send(update)
+      .expect(201)
+      .then(({ body: { review } }) => {
+        expect(review).toEqual({
+          review_id: 1,
+          title: 'Agricola',
+          category: 'euro game',
+          designer: 'Uwe Rosenberg',
+          owner: 'mallionaire',
+          review_body: 'Farmyard fun!',
+          review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+          created_at: expect.any(String),
+          votes: 0,
+        });
+      });
+  });
+  describe('errors', () => {
+    test('patch /api/reviews/pizza responds with 400 code and returns message ""', () => {
+      const update = { inc_votes: 20 };
+      return request(app)
+        .patch('/api/reviews/pizza')
+        .send(update)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+    test("patch /api/reviews/69 responds with 404 code and returns message 'Review not found'", () => {
+      const update = { inc_votes: 20 };
+      return request(app)
+        .patch('/api/reviews/69')
+        .send(update)
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Review not found');
+        });
+    });
+    test("patch /api/reviews/1 and inc_votes is the wrong data type - responds with 400 code and message 'Bad request'", () => {
+      const update = { inc_votes: 'pizza' };
+      return request(app)
+        .patch('/api/reviews/1')
+        .send(update)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+    test("patch /api/reviews/1 and inc_votes is mis-spelt - responds with 400 code and message 'Bad request'", () => {
+      const update = { inc_pizza: 20 };
+      return request(app)
+        .patch('/api/reviews/1')
+        .send(update)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+    test("patch /api/reviews/1 and inc_votes is omitted - responds with 400 code and message 'Bad request'", () => {
+      const update = {};
+      return request(app)
+        .patch('/api/reviews/1')
+        .send(update)
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
         });
     });
   });
