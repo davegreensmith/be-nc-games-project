@@ -63,7 +63,7 @@ describe('GET review by id', () => {
           votes: expect.any(Number),
           created_at: expect.any(String),
           owner: expect.any(String),
-          comment_count: expect.any(Number),
+          comment_count: '3',
         });
       });
   });
