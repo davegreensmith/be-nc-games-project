@@ -1,3 +1,7 @@
 \c nc_games_test
 
-UPDATE reviews SET votes = votes + 20 WHERE review_id = 69 RETURNING *;
+SELECT reviews.*, COUNT(comments.comment_id) AS comment_count FROM reviews
+JOIN comments ON reviews.review_id = comments.review_id
+WHERE reviews.review_id=3
+GROUP BY reviews.review_id;
+
