@@ -10,17 +10,16 @@ exports.getCategories = (req, res, next) => {
 exports.patchReviewById = (req, res, next) => {
   const { review_id } = req.params;
   const { inc_votes } = req.body;
-  updateReviewById(review_id, inc_votes).then((review) => {
-    // console.log(review, '<<< review passed back from promise');
-    for (let key in review) {
-      console.log('key >>>', review[key], 'type >>>', typeof review[key]);
-    }
-    res.status(201).send({ review });
-  });
-};
-
-exports.noPath = (req, res) => {
-  res.status(404).send({ msg: 'Path not found' });
+  updateReviewById(review_id, inc_votes)
+    .then((review) => {
+      if (review === undefined) {
+        return Promise.reject({ status: 404, msg: 'Review not found' });
+      }
+      res.status(201).send({ review });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getReviewById = (req, res, next) => {
