@@ -272,13 +272,30 @@ describe('GET /api/reviews', () => {
 });
 
 describe.only('GET /api/reviews/:review_id/comments', () => {
-  test('200: responds with an array of comments for the given review_id of length 3', () => {
+  test('200: responds with an array of length 3', () => {
     return request(app)
       .get('/api/reviews/2/comments')
       .expect(200)
-      .then(({ body: { review_comments } }) => {
-        expect(review_comments).toBeInstanceOf(Array);
-        expect(review_comments).toHaveLength(3);
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(3);
+      });
+  });
+  test('200: responds with an array of objects with properties from the comments table', () => {
+    return request(app)
+      .get('/api/reviews/2/comments')
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        comments.forEach((comment) => {
+          expect(comment).toEqual({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            review_id: expect.any(Number),
+          });
+        });
       });
   });
 });
