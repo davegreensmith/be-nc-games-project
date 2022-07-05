@@ -13,9 +13,6 @@ exports.patchReviewById = (req, res, next) => {
 
   updateReviewById(review_id, inc_votes)
     .then((review) => {
-      if (review === undefined) {
-        return Promise.reject({ status: 404, msg: 'Review not found' });
-      }
       res.status(201).send({ review });
     })
     .catch((err) => {
