@@ -219,3 +219,54 @@ describe('GET /api/users', () => {
     });
   });
 });
+
+describe('GET /api/reviews', () => {
+  test('200: responds with a reviews array of length 13', () => {
+    return request(app)
+      .get('/api/reviews')
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeInstanceOf(Array);
+        expect(reviews).toHaveLength(13);
+      });
+  });
+  test('200: responds with a reviews array of objects containing the properties from the reviews database table with the addition of a comment_count from the comments table', () => {
+    return request(app)
+      .get('/api/reviews')
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        reviews.forEach((review) => {
+          expect(review).toEqual({
+            owner: expect.any(String),
+            title: expect.any(String),
+            review_id: expect.any(Number),
+            category: expect.any(String),
+            review_img_url: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            review_body: expect.any(String),
+            designer: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test('200: the array should be in date order, descending', () => {
+    return request(app)
+      .get('/api/reviews')
+      .expect(200)
+      .then(({ body: { reviews } }) => {
+        expect(reviews).toBeSortedBy('created_at', { descending: true });
+      });
+  });
+  describe('errors', () => {
+    test('404: responds with "Path not found" when the path is entered incorrectly by the client', () => {
+      return request(app)
+        .get('/api/remooz')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Path not found');
+        });
+    });
+  });
+});
