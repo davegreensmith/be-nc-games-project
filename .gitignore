@@ -1,4 +1,4 @@
 node_modules
 .env.*
 sql-output.txt
-./db/test.sql
+/db/test.sql
