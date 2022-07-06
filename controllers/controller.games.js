@@ -56,10 +56,14 @@ exports.getReviews = (req, res) => {
   });
 };
 
-exports.postCommentByReviewId = (req, res) => {
+exports.postCommentByReviewId = (req, res, next) => {
   const { review_id } = req.params;
   const { username, body } = req.body;
-  addCommentByReviewId(review_id, username, body).then((postedComment) => {
-    res.status(201).send({ postedComment });
-  });
+  addCommentByReviewId(review_id, username, body)
+    .then((postedComment) => {
+      res.status(201).send({ postedComment });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

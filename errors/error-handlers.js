@@ -7,10 +7,13 @@ exports.handleCustomErrors = (err, req, res, next) => {
 exports.handlePSQLErrors = (err, req, res, next) => {
   if (err.code === '22P02' || err.code === '23502') {
     res.status(400).send({ msg: 'Bad request' });
+  } else if (err.code === '23503') {
+    res.status(404).send({ msg: 'Not found' });
   } else next(err);
 };
 
 exports.unhandledErrors = (err, req, res, next) => {
+  if (err.code) console.log(err.code, '<<< psql error code in unhandled errors');
   res.status(500).send({ msg: 'unhandled server error' });
 };
 
