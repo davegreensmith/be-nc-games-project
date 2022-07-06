@@ -67,3 +67,23 @@ exports.fetchReviews = () => {
       return rows;
     });
 };
+
+exports.addCommentByReviewId = (review_id, username, body) => {
+  return Promise.all([
+    db.query(`INSERT INTO comments (body, review_id, author, votes, created_at) VALUES ($3, $1, $2, 0, now()::timestamp) RETURNING *;`, [review_id, username, body]),
+    this.checkUserExists(username),
+  ]).then((data) => {
+    const rows = data[0].rows;
+    return rows[0];
+  });
+};
+
+exports.checkUserExists = (username) => {
+  const queryStr = `SELECT * FROM users WHERE username = $1`;
+  if (!username) return;
+  return db.query(queryStr, [username]).then(({ rowCount }) => {
+    if (rowCount === 0) {
+      return Promise.reject({ status: 404, msg: 'User not found' });
+    } else return true;
+  });
+};
