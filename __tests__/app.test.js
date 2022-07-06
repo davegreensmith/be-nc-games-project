@@ -271,7 +271,7 @@ describe('GET /api/reviews', () => {
   });
 });
 
-describe.only('GET /api/reviews/:review_id/comments', () => {
+describe('GET /api/reviews/:review_id/comments', () => {
   test('200: responds with an array of length 3', () => {
     return request(app)
       .get('/api/reviews/2/comments')
@@ -297,5 +297,31 @@ describe.only('GET /api/reviews/:review_id/comments', () => {
           });
         });
       });
+  });
+  describe('errors', () => {
+    test('400: responds with bad request when :review_id is in the wrong format (String instead of Number)', () => {
+      return request(app)
+        .get('/api/reviews/pizza/comments')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+    test('404: responds with "Path not found" when there is no review_id which matches the api path entered', () => {
+      return request(app)
+        .get('/api/reviews/69/comments')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Comment not found');
+        });
+    });
+    test('400: responds with bad request when the api path is misspelt', () => {
+      return request(app)
+        .get('/api/reviews/2/commentios')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Path not found');
+        });
+    });
   });
 });

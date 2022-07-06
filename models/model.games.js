@@ -39,7 +39,10 @@ exports.fetchUsers = () => {
 };
 
 exports.fetchCommentsByReviewId = (review_id) => {
-  return db.query(`SELECT * FROM comments WHERE review_id = $1;`, [review_id]).then(({ rows }) => {
+  return db.query(`SELECT * FROM comments WHERE review_id = $1;`, [review_id]).then(({ rows, rowCount }) => {
+    if (rowCount === 0) {
+      return Promise.reject({ status: 404, msg: 'Comment not found' });
+    }
     return rows;
   });
 };
