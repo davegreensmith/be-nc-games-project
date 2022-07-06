@@ -70,16 +70,11 @@ exports.fetchReviews = () => {
 
 exports.addCommentByReviewId = (review_id, username, body) => {
   return Promise.all([
-    db.query(
-      `INSERT INTO comments (body, review_id, author, votes, created_at)
-  VALUES
-  ($3, $1, $2, 0, now()::timestamp)
-  RETURNING *;`,
-      [review_id, username, body]
-    ),
+    db.query(`INSERT INTO comments (body, review_id, author, votes, created_at) VALUES ($3, $1, $2, 0, now()::timestamp) RETURNING *;`, [review_id, username, body]),
     this.checkUserExists(username),
-  ]).then(([{ rows }, userExists]) => {
-    return rows[0].body;
+  ]).then((data) => {
+    const rows = data[0].rows;
+    return rows[0];
   });
 };
 

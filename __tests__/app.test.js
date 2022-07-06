@@ -346,7 +346,14 @@ describe('POST /api/reviews/:review_id/comments', () => {
       .send(postComment)
       .expect(201)
       .then(({ body: { postedComment } }) => {
-        expect(postedComment).toBe("My cats didn't want to know - they just scattered the pieces everywhere");
+        expect(postedComment).toEqual({
+          author: 'dav3rid',
+          body: "My cats didn't want to know - they just scattered the pieces everywhere",
+          comment_id: 7,
+          created_at: expect.any(String),
+          review_id: 1,
+          votes: 0,
+        });
       });
   });
   describe('errors', () => {
@@ -398,17 +405,17 @@ describe('POST /api/reviews/:review_id/comments', () => {
           expect(msg).toBe('Bad request');
         });
     });
-    test('400: Bad request response where username does not exist in users table', () => {
+    test('404: Not found response where username does not exist in users table', () => {
       const postComment = {
         username: 'salehTheGreat',
-        body: 'Padme loves the box it came in',
+        body: 'Padme loves the box, the game came in',
       };
       return request(app)
-        .post('/api/reviews/pizza/comments')
+        .post('/api/reviews/1/comments')
         .send(postComment)
-        .expect(400)
+        .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe('Bad request');
+          expect(msg).toBe('Not found');
         });
     });
   });
