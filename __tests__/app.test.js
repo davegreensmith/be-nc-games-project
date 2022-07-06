@@ -271,6 +271,70 @@ describe('GET /api/reviews', () => {
   });
 });
 
+describe('GET /api/reviews/:review_id/comments', () => {
+  test('200: responds with an array of length 3', () => {
+    return request(app)
+      .get('/api/reviews/2/comments')
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(3);
+      });
+  });
+  test('200: responds with an array of objects with properties from the comments table', () => {
+    return request(app)
+      .get('/api/reviews/2/comments')
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        comments.forEach((comment) => {
+          expect(comment).toEqual({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            review_id: 2,
+          });
+        });
+      });
+  });
+  test('200: responds with an empty array if the review_id exists but there are no comments', () => {
+    return request(app)
+      .get('/api/reviews/1/comments')
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(0);
+      });
+  });
+  describe('errors', () => {
+    test('400: responds with bad request when :review_id is in the wrong format (String instead of Number)', () => {
+      return request(app)
+        .get('/api/reviews/pizza/comments')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+    test('404: responds with "Review not found" when there is no review_id which matches the api path entered', () => {
+      return request(app)
+        .get('/api/reviews/69/comments')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Review not found');
+        });
+    });
+    test('400: responds with bad request when the api path is misspelt', () => {
+      return request(app)
+        .get('/api/reviews/2/commentios')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Path not found');
+        });
+    });
+  });
+});
+
 describe('POST /api/reviews/:review_id/comments', () => {
   test('201: responds with the posted comment', () => {
     const postComment = {

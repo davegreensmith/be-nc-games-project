@@ -38,6 +38,23 @@ exports.fetchUsers = () => {
   });
 };
 
+exports.fetchCommentsByReviewId = (review_id) => {
+  return Promise.all([db.query(`SELECT * FROM comments WHERE review_id = $1;`, [review_id]), this.checkReviewIdExists(review_id)]).then(([{ rows }]) => {
+    return rows;
+  });
+};
+
+exports.checkReviewIdExists = (review_id) => {
+  const queryStr = `SELECT * FROM reviews WHERE review_id = $1`;
+
+  if (!review_id) return;
+  return db.query(queryStr, [review_id]).then(({ rowCount }) => {
+    if (rowCount === 0) {
+      return Promise.reject({ status: 404, msg: 'Review not found' });
+    } else return true;
+  });
+};
+
 exports.fetchReviews = () => {
   return db
     .query(
