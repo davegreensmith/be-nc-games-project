@@ -293,9 +293,18 @@ describe('GET /api/reviews/:review_id/comments', () => {
             created_at: expect.any(String),
             author: expect.any(String),
             body: expect.any(String),
-            review_id: expect.any(Number),
+            review_id: 2,
           });
         });
+      });
+  });
+  test('200: responds with an empty array if the review_id exists but there are no comments', () => {
+    return request(app)
+      .get('/api/reviews/1/comments')
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(0);
       });
   });
   describe('errors', () => {
@@ -307,12 +316,12 @@ describe('GET /api/reviews/:review_id/comments', () => {
           expect(msg).toBe('Bad request');
         });
     });
-    test('404: responds with "Path not found" when there is no review_id which matches the api path entered', () => {
+    test('404: responds with "Review not found" when there is no review_id which matches the api path entered', () => {
       return request(app)
         .get('/api/reviews/69/comments')
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe('Comment not found');
+          expect(msg).toBe('Review not found');
         });
     });
     test('400: responds with bad request when the api path is misspelt', () => {

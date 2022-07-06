@@ -39,11 +39,21 @@ exports.fetchUsers = () => {
 };
 
 exports.fetchCommentsByReviewId = (review_id) => {
-  return db.query(`SELECT * FROM comments WHERE review_id = $1;`, [review_id]).then(({ rows, rowCount }) => {
+  return Promise.all([db.query(`SELECT * FROM comments WHERE review_id = $1;`, [review_id]), this.checkReviewIdExists(review_id)]).then(([{ rows }, reviewExists]) => {
+    if (rows.length !== 0 || (rows.length === 0 && reviewExists)) {
+      return rows;
+    } else return Promise.reject({ status: 404, msg: 'Comment not found' });
+  });
+};
+
+exports.checkReviewIdExists = (review_id) => {
+  const queryStr = `SELECT * FROM reviews WHERE review_id = $1`;
+
+  if (!review_id) return;
+  return db.query(queryStr, [review_id]).then(({ rowCount }) => {
     if (rowCount === 0) {
-      return Promise.reject({ status: 404, msg: 'Comment not found' });
-    }
-    return rows;
+      return Promise.reject({ status: 404, msg: 'Review not found' });
+    } else return true;
   });
 };
 
