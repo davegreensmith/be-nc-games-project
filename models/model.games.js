@@ -50,3 +50,7 @@ exports.fetchReviews = () => {
       return rows;
     });
 };
+
+exports.addCommentByReviewId = (review_id, username, body) => {
+  return db.query();
+};

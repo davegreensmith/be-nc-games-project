@@ -270,3 +270,19 @@ describe('GET /api/reviews', () => {
     });
   });
 });
+
+describe('POST /api/reviews/:review_id/comments', () => {
+  test('201: responds with the posted comment', () => {
+    const postComment = {
+      username: 'dav3rid',
+      body: "My cats didn't want to know - they just scattered the peices everywhere",
+    };
+    return request(app)
+      .post('/api/reviews/1/comments')
+      .send(postComment)
+      .expect(201)
+      .then(({ body: { postedComment } }) => {
+        expect(postedComment).toBe("My cats didn't want to know - they just scattered the peices everywhere");
+      });
+  });
+});
