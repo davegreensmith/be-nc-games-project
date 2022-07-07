@@ -228,6 +228,14 @@ describe('GET /api/reviews', () => {
           expect(reviews).toBeSortedBy('created_at', { descending: false });
         });
     });
+    // test('200: empty array is returned if the catagory exists, but there are no reviews', () => {
+    //   return request(app)
+    //     .get('/api/reviews?category=dexterity')
+    //     .expect(200)
+    //     .then(({ body: { reviews } }) => {
+    //       expect(reviews).toEqual([]);
+    //     });
+    // });
     describe('errors', () => {
       test('400: bad request - message "Invalid query" sort_by is misspelt', () => {
         return request(app)
@@ -247,7 +255,7 @@ describe('GET /api/reviews', () => {
       });
       test('400: bad request - message "Invalid query" order is misspelt', () => {
         return request(app)
-          .get('/api/reviews?sort_by=created_at&origin=asc')
+          .get('/api/reviews?origin=asc')
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe('Invalid query');
@@ -255,7 +263,7 @@ describe('GET /api/reviews', () => {
       });
       test('400: bad request - message "Invalid query" order query does not contain valid parameters', () => {
         return request(app)
-          .get('/api/reviews?sort_by=created_at&order=pizza')
+          .get('/api/reviews?order=pizza')
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe('Invalid query');
@@ -263,7 +271,7 @@ describe('GET /api/reviews', () => {
       });
       test('400: bad request - message "Invalid query" category is misspelt', () => {
         return request(app)
-          .get('/api/reviews?sort_by=created_at&order=asc&dogegory=dexterity')
+          .get('/api/reviews?dogegory=dexterity')
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe('Invalid query');
@@ -271,7 +279,7 @@ describe('GET /api/reviews', () => {
       });
       test('400: bad request - message "Invalid query" category query does not contain valid parameters', () => {
         return request(app)
-          .get('/api/reviews?sort_by=created_at&order=asc&category=pizza')
+          .get('/api/reviews?category=pizza')
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe('Invalid query');
