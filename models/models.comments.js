@@ -38,10 +38,23 @@ exports.checkUserExists = (username) => {
 };
 
 exports.removeCommentByCommentId = (comment_id) => {
-  return Promise.all([db.query('SELECT * FROM comments WHERE comment_id=$1', [comment_id]), comment_id]).then(([{ rows }, comment_id]) => {
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: 'Comment not found' });
-    }
-    return db.query('DELETE FROM comments WHERE comment_id = $1', [comment_id]);
+  // return Promise.all([db.query('SELECT * FROM comments WHERE comment_id=$1', [comment_id]), comment_id]).then(([{ rows }, comment_id]) => {
+  //   if (rows.length === 0) {
+  //     return Promise.reject({ status: 404, msg: 'Comment not found' });
+  //   }
+  return Promise.all([db.query('DELETE FROM comments WHERE comment_id = $1 RETURNING *', [comment_id]), comment_id]).then(([{ rows }, comment_id]) => {
+    console.log(rows, '<<< prom1');
+    console.log(comment_id, '<<< comment_id');
+    return db.query('SELECT * FROM comments WHERE comment_id=$1', [comment_id]);
   });
+  // });
 };
+
+// exports.removeCommentByCommentId = (comment_id) => {
+//   return Promise.all([db.query('SELECT * FROM comments WHERE comment_id=$1', [comment_id]), comment_id]).then(([{ rows }, comment_id]) => {
+//     if (rows.length === 0) {
+//       return Promise.reject({ status: 404, msg: 'Comment not found' });
+//     }
+//     return db.query('DELETE FROM comments WHERE comment_id = $1', [comment_id]);
+//   });
+// };
