@@ -228,14 +228,14 @@ describe('GET /api/reviews', () => {
           expect(reviews).toBeSortedBy('created_at', { descending: false });
         });
     });
-    // test('200: empty array is returned if the catagory exists, but there are no reviews', () => {
-    //   return request(app)
-    //     .get('/api/reviews?category=dexterity')
-    //     .expect(200)
-    //     .then(({ body: { reviews } }) => {
-    //       expect(reviews).toEqual([]);
-    //     });
-    // });
+    test('200: empty array is returned if the catagory exists, but there are no reviews', () => {
+      return request(app)
+        .get('/api/reviews?category=children%27s+games')
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews).toEqual([]);
+        });
+    });
     describe('errors', () => {
       test('400: bad request - message "Invalid query" sort_by is misspelt', () => {
         return request(app)

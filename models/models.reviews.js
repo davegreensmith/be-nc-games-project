@@ -41,9 +41,7 @@ exports.fetchReviews = (sort_by = 'created_at', order = 'desc', category, reqQue
   }
 
   const validSort_byValues = ['review_id', 'title', 'category', 'designer', 'owner', 'review_body', 'review_img_url', 'created_at', 'votes', 'comment_count'];
-
   const validSort_byorder = ['asc', 'ASC', 'desc', 'DESC'];
-
   const validCategoryFilter = ['euro game', 'social deduction', 'dexterity', "children's games"];
 
   if (!validSort_byValues.includes(sort_by) || !validSort_byorder.includes(order) || (category && !validCategoryFilter.includes(category))) {
@@ -55,14 +53,18 @@ exports.fetchReviews = (sort_by = 'created_at', order = 'desc', category, reqQue
   LEFT JOIN comments ON reviews.review_id=comments.review_id`;
 
   if (category) {
-    queryStr += ` WHERE reviews.category = '${category}' `;
-  }
+    const categoryMod = category.replace(/'/g, "''");
+    queryStr += ` WHERE reviews.category = '${categoryMod}' `;
+    queryStrCatPresent = `SELECT * FROM categories WHERE slug = '${categoryMod}'`;
+  } else queryStrCatPresent = 'SELECT * FROM categories;';
 
   queryStr += `
   GROUP BY reviews.review_id
   ORDER BY reviews.${sort_by} ${order};`;
 
-  return db.query(queryStr).then(({ rows }) => {
-    return rows;
+  return Promise.all([db.query(queryStr), db.query(queryStrCatPresent)]).then(([{ rows }, { rowCount }]) => {
+    if (rowCount === 0) {
+      return Promise.reject({ status: 404, msg: 'Category not found' });
+    } else return rows;
   });
 };
