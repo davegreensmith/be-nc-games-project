@@ -40,31 +40,39 @@ exports.fetchReviews = (sort_by = 'created_at', order = 'desc', category, reqQue
     }
   }
 
-  const validSort_byValues = ['review_id', 'title', 'category', 'designer', 'owner', 'review_body', 'review_img_url', 'created_at', 'votes', 'comment_count'];
-  const validSort_byorder = ['asc', 'ASC', 'desc', 'DESC'];
-  const validCategoryFilter = ['euro game', 'social deduction', 'dexterity', "children's games"];
+  return Promise.all([this.findSlugs(), sort_by, order, category]).then(([validCategoryFilter, sort_by, order, category]) => {
+    const validSort_byValues = ['review_id', 'title', 'category', 'designer', 'owner', 'review_body', 'review_img_url', 'created_at', 'votes', 'comment_count'];
+    const validSort_byorder = ['asc', 'ASC', 'desc', 'DESC'];
 
-  if (!validSort_byValues.includes(sort_by) || !validSort_byorder.includes(order) || (category && !validCategoryFilter.includes(category))) {
-    return Promise.reject({ status: 400, msg: 'Invalid query' });
-  }
+    if (!validSort_byValues.includes(sort_by) || !validSort_byorder.includes(order) || (category && !validCategoryFilter.includes(category))) {
+      return Promise.reject({ status: 400, msg: 'Invalid query' });
+    }
 
-  let queryStr = `
+    let queryStr = `
   SELECT reviews.*, count(comments.review_id)::INT AS comment_count FROM reviews
   LEFT JOIN comments ON reviews.review_id=comments.review_id`;
 
-  if (category) {
-    const categoryMod = category.replace(/'/g, "''");
-    queryStr += ` WHERE reviews.category = '${categoryMod}' `;
-    queryStrCatPresent = `SELECT * FROM categories WHERE slug = '${categoryMod}'`;
-  } else queryStrCatPresent = 'SELECT * FROM categories;';
+    if (category) {
+      const categoryMod = category.replace(/'/g, "''");
+      queryStr += ` WHERE reviews.category = '${categoryMod}' `;
+      queryStrCatPresent = `SELECT * FROM categories WHERE slug = '${categoryMod}'`;
+    } else queryStrCatPresent = 'SELECT * FROM categories;';
 
-  queryStr += `
+    queryStr += `
   GROUP BY reviews.review_id
   ORDER BY reviews.${sort_by} ${order};`;
 
-  return Promise.all([db.query(queryStr), db.query(queryStrCatPresent)]).then(([{ rows }, { rowCount }]) => {
-    if (rowCount === 0) {
-      return Promise.reject({ status: 404, msg: 'Category not found' });
-    } else return rows;
+    return Promise.all([db.query(queryStr), db.query(queryStrCatPresent)]).then(([{ rows }, { rowCount }]) => {
+      if (rowCount === 0) {
+        return Promise.reject({ status: 404, msg: 'Category not found' });
+      } else return rows;
+    });
+  });
+};
+
+exports.findSlugs = () => {
+  return db.query(`SELECT slug FROM categories;`).then(({ rows }) => {
+    const slugs = rows.map((row) => row.slug);
+    return slugs;
   });
 };
