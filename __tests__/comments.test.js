@@ -161,3 +161,27 @@ describe('POST /api/reviews/:review_id/comments', () => {
     });
   });
 });
+
+describe('DELETE /api/comments/:comment_id', () => {
+  test('204: no content returned to client', () => {
+    return request(app).delete('/api/comments/1').expect(204);
+  });
+  describe('errors', () => {
+    test('404: not found - response where comment_id does not exist', () => {
+      return request(app)
+        .delete('/api/comments/69')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Comment not found');
+        });
+    });
+    test('400: Bad request - response where comment_id is in the wrong format', () => {
+      return request(app)
+        .delete('/api/comments/pizza')
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe('Bad request');
+        });
+    });
+  });
+});
