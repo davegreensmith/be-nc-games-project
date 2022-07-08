@@ -197,4 +197,94 @@ describe('GET /api/reviews', () => {
         });
     });
   });
+  describe('queries', () => {
+    test('sort_by: sort the reviews by created_at column', () => {
+      return request(app)
+        .get('/api/reviews?sort_by=created_at')
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews).toBeInstanceOf(Array);
+          expect(reviews).toHaveLength(13);
+          expect(reviews).toBeSortedBy('created_at', { descending: true });
+        });
+    });
+    test('sort_by: sort the reviews by created_at column and ordered ascending', () => {
+      return request(app)
+        .get('/api/reviews?sort_by=created_at&order=asc')
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews).toBeInstanceOf(Array);
+          expect(reviews).toHaveLength(13);
+          expect(reviews).toBeSortedBy('created_at', { descending: false });
+        });
+    });
+    test('sort_by: sort the reviews by created_at column and ordered ascending, filtered by the category', () => {
+      return request(app)
+        .get('/api/reviews?sort_by=created_at&order=asc&category=dexterity')
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews).toBeInstanceOf(Array);
+          expect(reviews).toHaveLength(1);
+          expect(reviews).toBeSortedBy('created_at', { descending: false });
+        });
+    });
+    test('200: empty array is returned if the catagory exists, but there are no reviews', () => {
+      return request(app)
+        .get('/api/reviews?category=children%27s+games')
+        .expect(200)
+        .then(({ body: { reviews } }) => {
+          expect(reviews).toEqual([]);
+        });
+    });
+    describe('errors', () => {
+      test('400: bad request - message "Invalid query" sort_by is misspelt', () => {
+        return request(app)
+          .get('/api/reviews?sort_pizza=created_at')
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe('Invalid query');
+          });
+      });
+      test('400: bad request - message "Invalid query" sort_by query does not contain valid parameters', () => {
+        return request(app)
+          .get('/api/reviews?sort_by=pizza')
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe('Invalid query');
+          });
+      });
+      test('400: bad request - message "Invalid query" order is misspelt', () => {
+        return request(app)
+          .get('/api/reviews?origin=asc')
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe('Invalid query');
+          });
+      });
+      test('400: bad request - message "Invalid query" order query does not contain valid parameters', () => {
+        return request(app)
+          .get('/api/reviews?order=pizza')
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe('Invalid query');
+          });
+      });
+      test('400: bad request - message "Invalid query" category is misspelt', () => {
+        return request(app)
+          .get('/api/reviews?dogegory=dexterity')
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe('Invalid query');
+          });
+      });
+      test('400: bad request - message "Invalid query" category query does not contain valid parameters', () => {
+        return request(app)
+          .get('/api/reviews?category=pizza')
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe('Invalid query');
+          });
+      });
+    });
+  });
 });
