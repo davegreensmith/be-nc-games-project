@@ -1,0 +1,116 @@
+{
+  "GET /api": {
+    "description": "serves up a json representation of all the available endpoints of the api"
+  },
+  "GET /api/categories": {
+    "description": "serves an array of all categories",
+    "queries": [],
+    "exampleResponse": {
+      "categories": [
+        {
+          "description": "Players attempt to uncover each other's hidden role",
+          "slug": "Social deduction"
+        }
+      ]
+    }
+  },
+  "GET /api/reviews": {
+    "description": "serves an array of all reviews",
+    "queries": ["category", "sort_by", "order"],
+    "exampleResponse": {
+      "reviews": [
+        {
+          "title": "One Night Ultimate Werewolf",
+          "designer": "Akihisa Okui",
+          "owner": "happyamy2016",
+          "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+          "category": "hidden-roles",
+          "created_at": 1610964101251,
+          "votes": 5
+        }
+      ]
+    }
+  },
+  "GET /api/review/:review_id": {
+    "description": "serves an object of the requested review_id",
+    "queries": [],
+    "exampleResponse": {
+      "review_id": 1,
+      "title": "expect.any(String)",
+      "category": "euro game",
+      "review_body": "Farmyard fun!",
+      "designer": "Uwe Rosenberg",
+      "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+      "votes": 1,
+      "created_at": "Mon Jan 18 2021 10:00:20 GMT+0000 (Greenwich Mean Time)",
+      "owner": "mallionaire",
+      "comment_count": 3
+    }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "user": [
+        {
+          "username": "mallionaire",
+          "name": "haz",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
+    }
+  },
+  "GET /api/reviews/:review_id/comments": {
+    "description": "serves an array of review comments for the requested review_id",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 1,
+          "votes": 16,
+          "created_at": "Wed Nov 22 2017 12:43:33 GMT+0000 (Greenwich Mean Time)",
+          "author": "bainesface",
+          "body": "I loved this game too!",
+          "review_id": 2
+        }
+      ]
+    }
+  },
+  "PATCH /api/reviews/:review_id": {
+    "description": "updates the review (by review_id) by the requested amount ('newVote') and returns the updated review",
+    "queries": [],
+    "request body": { "inc_votes": "newVote" },
+    "exampleResponse": {
+      "review_id": 1,
+      "title": "Agricola",
+      "category": "euro game",
+      "designer": "Uwe Rosenberg",
+      "owner": "mallionaire",
+      "review_body": "Farmyard fun!",
+      "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+      "created_at": "Mon Jan 18 2021 10:00:20 GMT+0000 (Greenwich Mean Time)",
+      "votes": 21
+    }
+  },
+  "POST /api/reviews/:review_id/comments": {
+    "description": "posts a new comment for a given review_id",
+    "queries": [],
+    "request body": {
+      "username": "dav3rid",
+      "body": "My cats didn't want to know - they just scattered the pieces everywhere"
+    },
+    "exampleResponse": {
+      "author": "dav3rid",
+      "body": "My cats didn't want to know - they just scattered the pieces everywhere",
+      "comment_id": 7,
+      "created_at": "Mon Jan 18 2021 10:00:20 GMT+0000 (Greenwich Mean Time)",
+      "review_id": 1,
+      "votes": 0
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "removes the given comment by comment_id",
+    "queries": [],
+    "exampleResponse": "No response"
+  }
+}
