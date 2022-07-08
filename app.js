@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
+const fs = require('fs/promises');
 
+const { getAPIEndpoints } = require('./controllers/controller.api.js');
 const { getCategories } = require('./controllers/controller.categories');
 const { getCommentsByReviewId, postCommentByReviewId } = require('./controllers/controller.comments');
 const { getReviewById, patchReviewById, getReviews } = require('./controllers/controller.reviews');
@@ -9,7 +11,7 @@ const { getUsers } = require('./controllers/controller.users');
 const { handleCustomErrors, handlePSQLErrors, unhandledErrors, noPath } = require('./errors/error-handlers.js');
 
 app.use(express.json());
-
+app.get('/api', getAPIEndpoints);
 app.get('/api/categories', getCategories);
 app.get('/api/review/:review_id', getReviewById);
 app.get('/api/users', getUsers);
