@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const fs = require('fs/promises');
+const cors = require('cors');
 
 const { getAPIEndpoints } = require('./controllers/controller.api.js');
 const { getCategories } = require('./controllers/controller.categories');
@@ -9,6 +10,8 @@ const { getReviewById, patchReviewById, getReviews } = require('./controllers/co
 const { getUsers } = require('./controllers/controller.users');
 
 const { handleCustomErrors, handlePSQLErrors, unhandledErrors, noPath } = require('./errors/error-handlers.js');
+
+app.use(cors());
 
 app.use(express.json());
 app.get('/api', getAPIEndpoints);
