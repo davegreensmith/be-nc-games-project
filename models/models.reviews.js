@@ -61,7 +61,7 @@ exports.fetchReviews = (sort_by = 'created_at', order = 'desc', category, reqQue
 
     queryStr += `
   GROUP BY reviews.review_id
-  ORDER BY reviews.${sort_by} ${order};`;
+  ORDER BY ${sort_by} ${order};`;
 
     return db.query(queryStr, queryValues).then(({ rows }) => {
       return rows;
